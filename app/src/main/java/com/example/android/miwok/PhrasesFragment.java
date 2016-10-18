@@ -1,17 +1,24 @@
 package com.example.android.miwok;
 
+
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 
-public class NumbersActivity extends AppCompatActivity {
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class PhrasesFragment extends Fragment {
+
 
     private MediaPlayer mMediaPlayer;
     private AudioManager audioManager;
@@ -42,40 +49,42 @@ public class NumbersActivity extends AppCompatActivity {
                 }
             };
 
+    public PhrasesFragment() {
+        // Required empty public constructor
+    }
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.word_list);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.word_list, container, false);
 
 
-        final ArrayList<Word> words = new ArrayList<Word>();
-        words.add(new Word("one", "Yan", R.drawable.number_one, R.raw.number_one));
-        words.add(new Word("two", "sin", R.drawable.number_two, R.raw.number_two));
-        words.add(new Word("tree", "krad", R.drawable.number_three, R.raw.number_three));
-        words.add(new Word("four", "kuz", R.drawable.number_four, R.raw.number_four));
-        words.add(new Word("five", "smous", R.drawable.number_five, R.raw.number_five));
-        words.add(new Word("six", "sdis", R.drawable.number_six, R.raw.number_six));
-        words.add(new Word("seven", "ziz", R.drawable.number_seven, R.raw.number_seven));
-        words.add(new Word("eight", "tam", R.drawable.number_eight, R.raw.number_eight));
-        words.add(new Word("nine", "tza", R.drawable.number_nine, R.raw.number_nine));
-        words.add(new Word("ten", "mraw", R.drawable.number_ten, R.raw.number_ten));
+        final ArrayList<Word> phrases = new ArrayList<Word>();
+        phrases.add(new Word("Where are you going?","Mani stesadat?",R.raw.phrase_where_are_you_going));
+        phrases.add(new Word("What is your name?","Maysmenek?", R.raw.phrase_what_is_your_name));
+        phrases.add(new Word("My name is...","Ismiyi...", R.raw.phrase_my_name_is));
+        phrases.add(new Word("I’m feeling good.","Ihenna lhal", R.raw.phrase_im_feeling_good));
+        phrases.add(new Word("Are you coming?","Is tsadat?", R.raw.phrase_are_you_coming));
+        phrases.add(new Word("Yes, I’m coming.","Iyeeh, hani sadaghen", R.raw.phrase_yes_im_coming));
+        phrases.add(new Word("Let’s go.","balakagh", R.raw.phrase_lets_go));
+        phrases.add(new Word("Come here.","achkid a", R.raw.phrase_come_here));
 
-        WordAdapter adapter = new WordAdapter(this, words, R.color.category_numbers);
-        ListView listView = (ListView) findViewById(R.id.list);
+        WordAdapter adapter = new WordAdapter(getActivity(),phrases,R.color.category_phrases);
+        ListView listView = (ListView) rootView.findViewById(R.id.list);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Word word = words.get(position);
+                Word word = phrases.get(position);
                 releaseMediaPlayer();
-
                 int result = audioManager.requestAudioFocus(
                         onAudioFocusChangeListener,
                         AudioManager.STREAM_MUSIC,
                         AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
                 if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                     //les pistes enregistrés
-                    mMediaPlayer = MediaPlayer.create(NumbersActivity.this, word.getmAudioResourceId());
+                    mMediaPlayer = MediaPlayer.create(getActivity(), word.getmAudioResourceId());
                     mMediaPlayer.start();
                     mMediaPlayer.setOnCompletionListener(mcompletionListener);
                 }
@@ -84,16 +93,15 @@ public class NumbersActivity extends AppCompatActivity {
 
 
         //Audio Managing
-        audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
 
 
 
-
-
+        return rootView;
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
         releaseMediaPlayer();
     }
@@ -116,6 +124,5 @@ public class NumbersActivity extends AppCompatActivity {
             audioManager.abandonAudioFocus(onAudioFocusChangeListener);
         }
     }
-
 
 }
